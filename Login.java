@@ -1,7 +1,7 @@
 public class Login{
     private String userName = null;
     private String emailId = null;
-    private TestPass pass;
+    private Pass pass;
     public void setUserName(String userName){
         this.userName=userName;
     }
@@ -15,7 +15,7 @@ public class Login{
         return emailId;
     }
     public void setHashPass(String passwd) throws Exception{
-        pass = new TestPass(passwd);
+        this.pass = new Pass(passwd);
     }
     public String getPass(){
         return pass.getPasswd();
