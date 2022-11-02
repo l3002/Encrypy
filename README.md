@@ -11,7 +11,6 @@ Plan:
 
 	1. Incorrect Password or Username/ Email-ID Error.
 	2. Forgotten Password Option after 3 login failures.
-	3. Account Lock after 5 login failures.
 
 ---> Register:
 

@@ -1,28 +1,20 @@
-import java.io.Serializable;
+public class Register extends Login{
 
-public class Register extends Login implements Serializable{
+    private String name; // stores name
+    private String secret; // stores answer to the Security Question
 
-    private String name;
-    private boolean blocked=false;
-    private String secret;
+    // To set values of Name
     public void setName(String name){
         this.name=name;
     }
+
+    // To get value of Name
     public String getName(){
         return name;
     }
-    public void setBlocked(String block){
-        if(block.equals("yes")){
-            this.blocked=true;
-        }
-        else{
-            this.blocked=false;
-        }
-    }
-    public boolean getBlocked(){
-        return blocked;
-    }
-    public void setSecret(String secret){
+
+    // To encrypt answer to the Security Question
+    static String looseEncrypt(String secret){
         String secret1="";
         for(int i=0;i<secret.length();i++){
             if(i%2==0){
@@ -32,13 +24,20 @@ public class Register extends Login implements Serializable{
                 secret1+=(char)((int)secret.charAt(i)-1);
             }
         }
+        return secret1;
+    }
+
+    // To set Value of secret
+    public void setSecret(String secret){
+        String secret1= looseEncrypt(secret);
         this.secret=secret1;
     }
     public String getSecret(){
         return secret;
     }
     Register(String name, String userName,String emailId,String passwd,String secret) throws Exception{
-        super(userName,emailId,passwd);
+        super(userName,emailId);
+        super.setHashPass(passwd);
         setName(name);
         setSecret(secret);
     }
