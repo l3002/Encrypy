@@ -6,56 +6,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 public class Menu {
-    static void createNewAccount() throws Exception{
-        Console c = System.console();
-        String name = c.readLine("Enter your Name: ");
-        String userName = c.readLine("Enter Username: ");
-        String emailId = c.readLine("Enter your EmailId: ");
-        String passwd = new String(c.readPassword());
-        LoginRegisterExceptions.WeakPasswordException(passwd);
-        LoginRegisterExceptions.confirmPassword(passwd, c);
-        String secret = c.readLine();
-        Register newAccount = new Register(name, userName, emailId, passwd, secret);
-        try{
-            ArrayList<Register> fileContent = (ArrayList<Register>) Main.getContent(Main.file0);
-            fileContent.add(newAccount);
-            Main.writeData(Main.file0, fileContent);
-        }
-        catch(EOFException e){
-            ArrayList<Register> firstArrayList = new ArrayList<Register>();
-            firstArrayList.add(newAccount);
-            Main.writeData(Main.file0, firstArrayList);
-        }
-        finally{
-            mail(emailId,"accountAdded");
-        }
-    }
-
-    static void createNewEntry(String uid,String email) throws Exception{
-        Console c = System.console();
-        String userNameOrEmail = c.readLine("Enter the Username or Email-ID: ");
-        String url = c.readLine("Enter the URL: ");
-        char[] passwdCharArr = c.readPassword("Enter the Password: ");
-        String passwd = new String(passwdCharArr);
-        LoginRegisterExceptions.confirmPassword(passwd, c);
-        Entry entry = new Entry(userNameOrEmail, passwd, url);
-        HashMap<String,ArrayList<Entry>> fileContent = (HashMap<String,ArrayList<Entry>>) Main.getContent(Main.file1);
-        try{
-            ArrayList<Entry> entryList = fileContent.get(uid);
-            entryList.add(entry);
-            fileContent.put(uid,entryList);
-            Main.writeData(Main.file1, fileContent);
-        }
-        catch(EOFException e){
-            ArrayList<Entry> firstEntry = new ArrayList<>();
-            firstEntry.add(entry);
-            fileContent.put(uid,firstEntry);
-            Main.writeData(Main.file1, fileContent);
-        }
-        finally{
-            mail(email,"passwordAdded");
-        }
-    }
 
     static boolean mail(String email, String seq) throws Exception{
         // Recipient's email ID needs to be mentioned.
@@ -137,13 +87,5 @@ public class Menu {
                 break;
         }
         return true;
-    }
-
-    static void updatePassword() throws Exception{
-        // to updatePassword for a certain Account or Username 
-        Console c = System.console();
-        String newPasswd = new String(c.readPassword("Enter the new Password"));
-        LoginRegisterExceptions.confirmPassword(newPasswd, c);
-        System.out.println("Password Updated");
     }
 }

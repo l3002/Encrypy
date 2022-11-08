@@ -43,9 +43,9 @@ public class LoginRegisterExceptions extends Exception{
 
     // For Account Not Found Exception
     public static Register notRegistered(String email) throws Exception{
-        ArrayList<Register> fileContent = (ArrayList<Register>) Main.getContent(Main.file0);
+        ArrayList<Register> fileContent = (ArrayList<Register>) Main.getContent(Main.file);
         boolean flag = true;
-        Register account=new Register(null, null, null, null, null);
+        Register account = null;
         for(Register a: fileContent){
             if(a.getEmailId().equalsIgnoreCase(email)){
                 account = a;
@@ -59,7 +59,7 @@ public class LoginRegisterExceptions extends Exception{
         return account;
     }
     
-    private LoginRegisterExceptions(String a){
+    LoginRegisterExceptions(String a){
         super(a);
     }
 }

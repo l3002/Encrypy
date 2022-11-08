@@ -1,4 +1,5 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 
 /* Login class
@@ -11,11 +12,11 @@ public class Login implements Serializable{
 
     private String userName = null; // stores usernames (default=null)
     private String emailId = null; // stores email address (default=null)
-    private Credential pass = new Credential(); // stores Pass object which contains passwords
+    private Credential pass = new Credential(); // stores Pass object which contains password
 
     // Forgotten Password functionality: used for reseting password
     static void forgottenPassword() throws Exception{
-        // To Confirm Secret Question
+        // for reseting password
 
         // input for email address
         System.out.println("Enter the email address");
@@ -28,13 +29,14 @@ public class Login implements Serializable{
         Register account = LoginRegisterExceptions.notRegistered(email);
 
         // Security Question
-        System.out.println("What's your favourite beverage?");
+        System.out.println("What's your favourite fruit?");
         String secret = new BufferedReader(new InputStreamReader(System.in)).readLine();
         String a = Register.looseEncrypt(secret);
         
         // validating secret and token
         if(check && account.getSecret().equalsIgnoreCase(a)){
-            Menu.updatePassword(); // calling updatePassword() method
+            String newPassword = new String(System.console().readPassword());
+            account.setHashPass(newPassword); // calling updatePassword() method
         }
         else{
             System.out.println("either token or security question was incorrect.");
@@ -61,9 +63,12 @@ public class Login implements Serializable{
         return emailId;
     }
 
-    // To create a Pass variable and store it in pass
+    public void setTextPass(String passwd){
+        this.pass.setPasswdAsText(passwd);
+    }
+
     public void setHashPass(String passwd) throws Exception{
-        this.pass.setPasswdAsHash(passwd);;
+        this.pass.setPasswrdAsCipher(passwd);
     }
 
     public void setCipherPass(String passwd) throws Exception{
@@ -76,12 +81,13 @@ public class Login implements Serializable{
     }
 
     // Login constructor to create register object
-    Login(String userName,String emailId) throws Exception{
+    Login(String userName,String emailId,String passwd) throws Exception{
         setUserName(userName);
         setEmailId(emailId);
+        this.pass.setPasswdAsHash(passwd);
     }
 
-    // Login constructor to create login or user object
+    // Login constructor to create user object
     Login(String userNameOrEmail) throws Exception{
 
         // To see if the string input is a email or a userName
@@ -91,5 +97,18 @@ public class Login implements Serializable{
         else{
             setUserName(userNameOrEmail);
         }
+    }
+
+    // Login constructor to create login object
+    Login(String userNameOrEmail, String passwd) throws Exception{
+
+        // To see if the string input is a email or a userName
+        if(userNameOrEmail.contains("@")){
+            setEmailId(userNameOrEmail);
+        }
+        else{
+            setUserName(userNameOrEmail);
+        }
+        setTextPass(passwd);
     }
 }

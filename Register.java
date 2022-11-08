@@ -1,7 +1,52 @@
+
+import java.io.Console;
+import java.util.ArrayList;
+
 public class Register extends Login{
 
     private String name; // stores name
     private String secret; // stores answer to the Security Question
+    private ArrayList<Entry> entries;
+
+    static void createNewAccount() throws Exception{
+        Console c = System.console();
+        String name = c.readLine("Enter your Name: ");
+        String userName = c.readLine("Enter Username: ");
+        String emailId = c.readLine("Enter your EmailId: ");
+        String passwd = new String(c.readPassword());
+        LoginRegisterExceptions.WeakPasswordException(passwd);
+        LoginRegisterExceptions.confirmPassword(passwd, c);
+        String secret = c.readLine();
+        Register newAccount = new Register(name, userName, emailId, passwd, secret);
+        Main.writeData(Main.file, newAccount);
+        Menu.mail(emailId,"accountAdded");
+    }
+
+    public ArrayList<Entry> getEntries() throws Exception{
+        return entries;
+    }
+
+    public void setEntries(ArrayList<Entry> entries){
+        this.entries=entries;
+    }
+
+    public Register validate(Login login) throws Exception{
+        if((getEmailId().equalsIgnoreCase(login.getEmailId()) || getUserName().equals(login.getUserName())) && getPass().validate(login.getPass().getPasswd())){
+            return this;
+        }
+        else{
+            throw new LoginRegisterExceptions("Wrong Credentials");
+        }
+    }
+
+    public boolean equals(Register account) throws Exception{
+        if((getEmailId().equalsIgnoreCase(account.getEmailId()) && getUserName().equals(account.getUserName())) && getPass().getPasswd().equals(account.getPass().getPasswd())){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
     // To set values of Name
     public void setName(String name){
@@ -36,8 +81,7 @@ public class Register extends Login{
         return secret;
     }
     Register(String name, String userName,String emailId,String passwd,String secret) throws Exception{
-        super(userName,emailId);
-        super.setHashPass(passwd);
+        super(userName,emailId,passwd);
         setName(name);
         setSecret(secret);
     }

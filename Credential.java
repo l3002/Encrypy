@@ -1,6 +1,8 @@
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
@@ -13,6 +15,14 @@ class Credential implements Serializable{
 
     private String passwd; // password for register and login
     
+    public void setPasswdAsText(String passwd){
+        this.passwd = passwd;
+    }
+
+    public String getPasswd(){
+        return passwd;
+    }
+
     // to set the account passwords
     public void setPasswdAsHash(String passwd) throws Exception{
         this.passwd=HashCreator.createHash(passwd);
@@ -29,8 +39,15 @@ class Credential implements Serializable{
     }
 
     // to get account paswords
-    public String getHashedPasswd(){
-        return passwd;
+    public boolean validate(String input) throws NoSuchAlgorithmException, InvalidKeySpecException{
+        byte[] testHash = HashCreator.createHash(input, passwd);
+        byte[] hash = HashCreator.fromHex(passwd.split(":")[2]);
+        int diff = testHash.length ^ hash.length;
+        for(int i = 0; i < hash.length && i < testHash.length; i++)
+        {
+            diff |= hash[i] ^ testHash[i];
+        }
+        return diff == 0;
     }
 
     // Inner Class to create ciphers and hashes for given passwords
@@ -43,22 +60,47 @@ class Credential implements Serializable{
         static String createHash(String input) throws Exception{
             SecureRandom random = new SecureRandom();
             byte[] salt = new byte[16];
+            int iteration = 65536;
             random.nextBytes(salt);
-            PBEKeySpec spec = new PBEKeySpec(input.toCharArray(), salt, 65536, 128);
+            PBEKeySpec spec = new PBEKeySpec(input.toCharArray(), salt, iteration, 64*8);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] hash = factory.generateSecret(spec).getEncoded();
-            String a = convertToHex(hash);
-            return a;
+            return iteration + ":" + convertToHex(salt) + ":" + convertToHex(hash);
         }
-        
+
+        static byte[] createHash(String input, String hashedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException{
+            String[] parts = hashedPassword.split(":");
+            int iterations = Integer.parseInt(parts[0]);
+
+            byte[] salt = fromHex(parts[1]);
+            byte[] hash = fromHex(parts[2]);
+            PBEKeySpec spec = new PBEKeySpec(input.toCharArray(), salt, iterations, hash.length * 8);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            return skf.generateSecret(spec).getEncoded();
+        }
+
+        static byte[] fromHex(String hex)
+        {
+            byte[] bytes = new byte[hex.length() / 2];
+            for(int i = 0; i < bytes.length ;i++)
+            {
+                bytes[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+            }
+            return bytes;
+        }
+
         // method to convert the hash byte array to a string
         private static String convertToHex(byte[] messageDigest) {
             BigInteger bigint = new BigInteger(1, messageDigest);
             String hexText = bigint.toString(16);
-            while (hexText.length() < 32) {
-                hexText = "0".concat(hexText);
+            int paddingLength = (messageDigest.length * 2) - hexText.length();
+            if(paddingLength > 0)
+            {
+                return String.format("%0"  +paddingLength + "d", 0) + hexText;
             }
-            return hexText;
+            else{
+                return hexText;
+            }
         }
         
         // to cipher managed passwords
