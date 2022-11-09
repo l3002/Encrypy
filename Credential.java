@@ -1,20 +1,22 @@
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 class Credential implements Serializable{
 
     private String passwd; // password for register and login
-    
+
     public void setPasswdAsText(String passwd){
         this.passwd = passwd;
     }
@@ -29,7 +31,7 @@ class Credential implements Serializable{
     }
 
     // to set managed passwords
-    public void setPasswrdAsCipher(String passwd) throws Exception{
+    public void setPasswdAsCipher(String passwd) throws Exception{
         this.passwd =HashCreator.cipher(passwd);
     }
 
@@ -53,8 +55,8 @@ class Credential implements Serializable{
     // Inner Class to create ciphers and hashes for given passwords
     private static class HashCreator{
 
-        private static SecretKey key; // secret key used during 
-        private static Cipher c; // Cipher object used during 
+        private static Cipher c; // secret key used during 
+        private static KeyPair pair; // Cipher object used during
 
         // method to create Hash for account passwords and returing string
         static String createHash(String input) throws Exception{
@@ -105,11 +107,12 @@ class Credential implements Serializable{
         
         // to cipher managed passwords
         static String cipher(String input) throws Exception{
-            KeyGenerator keygen = KeyGenerator.getInstance("DES");
-            keygen.init(56);
-            key=keygen.generateKey();
-            c= Cipher.getInstance("DES/ECB/PKCS5Padding");
-            c.init(Cipher.ENCRYPT_MODE, key);
+            KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
+            keygen.initialize(2048);
+            pair = keygen.generateKeyPair();
+            PublicKey publickey = pair.getPublic();
+            c= Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+            c.init(Cipher.ENCRYPT_MODE, publickey);
             byte[] cipher = c.doFinal(input.getBytes());
             return Base64.getEncoder().encodeToString(cipher);
         }
@@ -117,7 +120,8 @@ class Credential implements Serializable{
         // to decipher managed passwords
         static String decipher(String cipher) throws Exception{
             byte[] a = Base64.getDecoder().decode(cipher);
-            c.init(Cipher.DECRYPT_MODE,key);
+            PrivateKey privateKey = pair.getPrivate();
+            c.init(Cipher.DECRYPT_MODE,privateKey);
             byte[] decipherBytes = c.doFinal(a);
             return new String(decipherBytes,"UTF8");
         }

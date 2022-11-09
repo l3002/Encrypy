@@ -1,5 +1,3 @@
-
-import java.io.Console;
 import java.util.ArrayList;
 
 public class Register extends Login{
@@ -7,20 +5,6 @@ public class Register extends Login{
     private String name; // stores name
     private String secret; // stores answer to the Security Question
     private ArrayList<Entry> entries;
-
-    static void createNewAccount() throws Exception{
-        Console c = System.console();
-        String name = c.readLine("Enter your Name: ");
-        String userName = c.readLine("Enter Username: ");
-        String emailId = c.readLine("Enter your EmailId: ");
-        String passwd = new String(c.readPassword());
-        LoginRegisterExceptions.WeakPasswordException(passwd);
-        LoginRegisterExceptions.confirmPassword(passwd, c);
-        String secret = c.readLine();
-        Register newAccount = new Register(name, userName, emailId, passwd, secret);
-        Main.writeData(Main.file, newAccount);
-        Menu.mail(emailId,"accountAdded");
-    }
 
     public ArrayList<Entry> getEntries() throws Exception{
         return entries;

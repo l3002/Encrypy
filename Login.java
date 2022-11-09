@@ -68,11 +68,11 @@ public class Login implements Serializable{
     }
 
     public void setHashPass(String passwd) throws Exception{
-        this.pass.setPasswrdAsCipher(passwd);
+        this.pass.setPasswdAsHash(passwd);
     }
 
     public void setCipherPass(String passwd) throws Exception{
-        this.pass.setPasswrdAsCipher(passwd);
+        this.pass.setPasswdAsCipher(passwd);
     }
 
     // To get the Password stored in pass

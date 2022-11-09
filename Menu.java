@@ -6,6 +6,58 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 public class Menu {
+    static final Console c = System.console();
+    static void createNewAccount() throws Exception{
+        String name = c.readLine("Enter your Name: ");
+        String userName = c.readLine("Enter Username: ");
+        String emailId = c.readLine("Enter your EmailId: ");
+        String passwd = new String(c.readPassword());
+        LoginRegisterExceptions.WeakPasswordException(passwd);
+        LoginRegisterExceptions.confirmPassword(passwd);
+        String secret = c.readLine();
+        Register newAccount = new Register(name, userName, emailId, passwd, secret);
+        Main.writeData(Main.file, newAccount);
+        Menu.mail(emailId,"accountAdded");
+    }
+
+    static void addNewEntry(Register account) throws Exception{
+        String userNameOrEmail = c.readLine("Enter the Username or Email-ID: ");
+        String url = c.readLine("Enter the URL: ");
+        char[] passwdCharArr = c.readPassword("Enter the Password: ");
+        String passwd = new String(passwdCharArr);
+        LoginRegisterExceptions.confirmPassword(passwd);
+        Entry entry = new Entry(userNameOrEmail, passwd, url);
+        ArrayList<Entry> entryList = account.getEntries();
+        entryList.add(entry);
+        account.setEntries(entryList);
+        Main.writeData(Main.file, account);
+    }
+
+    static void displayPasswords(Register account) throws Exception{
+        System.out.println(String.format("%15s %15s %15s %15s","URL","UserName","Email-ID","Password"));
+        for(Entry e : account.getEntries()){
+            System.out.println(String.format("%15s %15s %15s",e.getUrl(),e.getUserName(),e.getEmailId(),e.getPass().getDecipheredPasswd()));
+        }
+    }
+
+    static void updateEntry(Register account,int index,String identify) throws Exception{
+        ArrayList<Entry> entries = account.getEntries();
+        switch (identify) {
+            case "Username":
+                String newUserName = c.readLine("Enter the new Username: ");
+                entries.get(index).setUserName(newUserName);
+                break;
+            case "Password":
+                String newPassword = new String(c.readPassword("Enter the new Username: "));
+                LoginRegisterExceptions.confirmPassword(newPassword);
+                entries.get(index).setCipherPass(newPassword);
+                break;
+            case "Email-ID":
+                String newEmail = c.readLine("Enter the new Email-ID: ");
+                entries.get(index).setEmailId(newEmail);
+                break;
+        }
+    }
 
     static boolean mail(String email, String seq) throws Exception{
         // Recipient's email ID needs to be mentioned.

@@ -24,14 +24,7 @@ public class Main {
             ArrayList<Register> fileContent = getContent(file);
             boolean flag = true;
             for(int i=0;i<fileContent.size();i++){
-                Register r = fileContent.get(i);
-                System.out.println("this is emailID : "+r.getEmailId());
-                System.out.println("this is emailID account : "+account.getEmailId());
-                System.out.println("this is emailID : "+r.getUserName());
-                System.out.println("this is emailID account : "+account.getUserName());
-                System.out.println("this is emailID : "+r.getPass());
-                System.out.println("this is emailID account : "+account.getPass());
-                if(r.equals(account)){
+                if(fileContent.get(i).equals(account)){
                     flag=false;
                     System.out.println("set");
                     fileContent.set(i,account);
@@ -58,15 +51,15 @@ public class Main {
         }
     }
     public static void main(String[] args) throws Exception{
-        // Register r2 = new Register("Tanmay", "tnamysd9", "Tanmaymathpal4545@gmail.com", "Thakdjfd", "tsdkf");
-        // writeData(file, r2);
-        // Register r1 = r2;
-        // writeData(file,r1);
-        // Register c = new Register("Thissdfsd", "tna9", "Tanmaymathpal9948@gmail.com", "Thakdd", "tkf");
-        // writeData(file,c);
-        // ArrayList<Register> b = getContent(file);
-        // for(Register n : b){
-        //     System.out.println("This is userName " + n.getUserName());
-        // }
+        Register r2 = new Register("Tanmay", "tnamysd9", "Tanmaymathpal4545@gmail.com", "Thakdjfd", "tsdkf");
+        ArrayList<Entry> a = new ArrayList<Entry>();
+        a.add(new Entry("Username", "Tanmay", "www.codechef.com"));
+        a.add(new Entry("Tnm3","Max=numb12","www.adidas.com"));
+        r2.setEntries(a);
+        Menu.displayPasswords(r2);
+        
+        // Credential c = new Credential();
+        // c.setPasswdAsCipher("Tanmay2003");
+        // System.out.println(c.getDecipheredPasswd());
     }
 }

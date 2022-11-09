@@ -1,5 +1,4 @@
 import java.util.regex.Pattern;
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 
@@ -34,8 +33,8 @@ public class LoginRegisterExceptions extends Exception{
     }
 
     // To confirm Entered Password
-    public static void confirmPassword(String newpasswd,Console c) throws LoginRegisterExceptions{
-        String confirmPassword = new String(c.readPassword("Confirm the password"));
+    public static void confirmPassword(String newpasswd) throws LoginRegisterExceptions{
+        String confirmPassword = new String(System.console().readPassword("Confirm the password"));
         if(!newpasswd.equals(confirmPassword)){
             throw new LoginRegisterExceptions("Passwords don't match");
         }
